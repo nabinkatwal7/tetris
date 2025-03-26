@@ -8,8 +8,9 @@ import (
 
 	"github.com/hajimehoshi/ebiten/v2"
 	"github.com/hajimehoshi/ebiten/v2/inpututil"
-	"github.com/hajimehoshi/ebiten/v2/text/v2"
+	"github.com/hajimehoshi/ebiten/v2/text"
 	"github.com/hajimehoshi/ebiten/v2/vector"
+	"golang.org/x/image/font/basicfont"
 )
 
 const (
@@ -30,11 +31,6 @@ var (
 		{0, 255, 0, 255},   // S (green)
 		{128, 0, 128, 255}, // T (purple)
 		{255, 0, 0, 255},   // Z (red)
-	}
-
-	// Create a basic face source for text/v2
-	faceSource = &text.GoTextFace{
-		Size: 13,
 	}
 )
 
@@ -303,13 +299,6 @@ func (g *Game) Update() error {
 	return nil
 }
 
-func drawText(screen *ebiten.Image, str string, x, y int, clr color.Color) {
-	op := &text.DrawOptions{}
-	op.GeoM.Translate(float64(x), float64(y))
-	op.ColorScale.ScaleWithColor(clr)
-	text.Draw(screen, str, faceSource, op)
-}
-
 func (g *Game) Draw(screen *ebiten.Image) {
 	// Draw grid background
 	for x := 0; x < gridWidth; x++ {
@@ -335,7 +324,7 @@ func (g *Game) Draw(screen *ebiten.Image) {
 
 	// Draw next piece preview
 	nextX, nextY := gridWidth*blockSize+20, 60
-	drawText(screen, "Next:", nextX, nextY-10, color.White)
+	text.Draw(screen, "Next:", basicfont.Face7x13, nextX, nextY-10, color.White)
 	if g.nextPiece != nil {
 		for y, row := range g.nextPiece.shape {
 			for x, val := range row {
@@ -351,9 +340,9 @@ func (g *Game) Draw(screen *ebiten.Image) {
 	scoreText := "Score: " + strconv.Itoa(g.score)
 	levelText := "Level: " + strconv.Itoa(g.level)
 	linesText := "Lines: " + strconv.Itoa(g.linesCleared)
-	drawText(screen, scoreText, gridWidth*blockSize+20, 180, color.White)
-	drawText(screen, levelText, gridWidth*blockSize+20, 200, color.White)
-	drawText(screen, linesText, gridWidth*blockSize+20, 220, color.White)
+	text.Draw(screen, scoreText, basicfont.Face7x13, gridWidth*blockSize+20, 180, color.White)
+	text.Draw(screen, levelText, basicfont.Face7x13, gridWidth*blockSize+20, 200, color.White)
+	text.Draw(screen, linesText, basicfont.Face7x13, gridWidth*blockSize+20, 220, color.White)
 
 	// Draw controls help
 	controls := []string{
@@ -364,14 +353,14 @@ func (g *Game) Draw(screen *ebiten.Image) {
 		"Space: Hard Drop",
 	}
 	for i, ctrl := range controls {
-		drawText(screen, ctrl, gridWidth*blockSize+20, 260+i*20, color.White)
+		text.Draw(screen, ctrl, basicfont.Face7x13, gridWidth*blockSize+20, 260+i*20, color.White)
 	}
 
 	// Draw game over screen
 	if g.gameOver {
 		vector.DrawFilledRect(screen, 0, 0, float32(screenWidth), float32(screenHeight), color.RGBA{0, 0, 0, 200}, false)
-		drawText(screen, "GAME OVER", screenWidth/2-40, screenHeight/2-20, color.White)
-		drawText(screen, "Press SPACE to restart", screenWidth/2-80, screenHeight/2+10, color.White)
+		text.Draw(screen, "GAME OVER", basicfont.Face7x13, screenWidth/2-40, screenHeight/2-20, color.White)
+		text.Draw(screen, "Press SPACE to restart", basicfont.Face7x13, screenWidth/2-80, screenHeight/2+10, color.White)
 	}
 }
 
